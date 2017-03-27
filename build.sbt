@@ -1,6 +1,8 @@
-// Spray library requirements
-val sprayRepo = "spray repo" at "http://repo.spray.io"
-val spray = "io.spray" %% "spray-can" % "1.3.4"
+// Akka
+val akka_actor = "com.typesafe.akka" %% "akka-actor" % "2.5-M2"
+
+// Akka HTTP
+val akka_http = "com.typesafe.akka" %% "akka-http" % "10.0.5"
 
 // Our main build settings for the tax-master-api project
 lazy val root = (project in file(".")).
@@ -8,9 +10,11 @@ lazy val root = (project in file(".")).
     name := "tax-master-api",
 
     // Latest Scala version at time of authorship
-    scalaVersion := "2.11.8",
+    scalaVersion := "2.12.1",
 
-    // Delineate resolvers and dependencies
-    resolvers += sprayRepo,
-    libraryDependencies += spray
+    // Delineate dependencies
+    libraryDependencies ++= Seq(
+      akka_actor,
+      akka_http
+    )
   )
