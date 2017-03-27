@@ -1,5 +1,5 @@
 // Akka
-val akka_actor = "com.typesafe.akka" %% "akka-actor" % "2.5-M2"
+val akka_actor = "com.typesafe.akka" %% "akka-actor" % "2.4.17"
 
 // Akka HTTP
 val akka_http = "com.typesafe.akka" %% "akka-http" % "10.0.5"
