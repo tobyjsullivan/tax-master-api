@@ -1,3 +1,3 @@
 package invoices
 
-case class Client(name: String)
+case class Client(id: String, name: String)

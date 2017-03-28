@@ -10,8 +10,8 @@ import spray.json._
 import scala.util.{Failure, Success, Try}
 
 object InvoiceProtocol extends SprayJsonSupport with DefaultJsonProtocol {
-  implicit val clientFormat = jsonFormat1(Client)
-  implicit val invoiceFormat = jsonFormat3(Invoice)
+  implicit val clientFormat = jsonFormat2(Client)
+  implicit val invoiceFormat = jsonFormat4(Invoice)
 
   implicit object LocalDateFormat extends RootJsonFormat[LocalDate] {
     val dateFormat = ISODateTimeFormat.date()
