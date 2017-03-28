@@ -9,7 +9,7 @@ import server.handlers.InvoicesHandler
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-/** Builds the route handlers and forwards all requests to the correct actors
+/** Builds the route server.handlers and forwards all requests to the correct actors
   */
 object Router {
   def apply()(implicit system: ActorSystem): HttpRequest => HttpResponse = {

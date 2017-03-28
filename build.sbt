@@ -1,4 +1,5 @@
 // Dependencies
+val scalaTest = "org.scalatest" %% "scalatest" % "3.0.1"
 val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.4.17"
 val akkaHttp = "com.typesafe.akka" %% "akka-http" % "10.0.5"
 val akkaHttpSprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.5"
@@ -15,6 +16,7 @@ lazy val root = (project in file(".")).
 
     // Delineate dependencies
     libraryDependencies ++= Seq(
+      scalaTest,
       akkaActor,
       akkaHttp,
       akkaHttpSprayJson,
