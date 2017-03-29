@@ -1,6 +1,6 @@
 package server.json
 
-import invoices.Invoice
+import models.invoices.Invoice
 import spray.json._
 
 private[json] trait InvoiceProtocol extends DefaultJsonProtocol

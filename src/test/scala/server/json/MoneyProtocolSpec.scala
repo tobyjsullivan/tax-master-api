@@ -29,7 +29,7 @@ class MoneyProtocolSpec extends FunSpec with Matchers with MoneyProtocol {
         val json = """{ "currency": "USD", "value": 4891551 }""".parseJson
 
         it("should properly deserialize the value") {
-          val money = MoneyFormat.read(json)
+          val money = json.convertTo[Money]
 
           money should be (Money.of(USD, 48915.51))
         }
@@ -40,7 +40,7 @@ class MoneyProtocolSpec extends FunSpec with Matchers with MoneyProtocol {
 
         it("should throw a deserialization exception") {
           assertThrows[DeserializationException] {
-            MoneyFormat.read(json)
+            json.convertTo[Money]
           }
         }
       }

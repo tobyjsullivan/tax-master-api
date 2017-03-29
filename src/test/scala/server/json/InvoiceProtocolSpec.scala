@@ -1,6 +1,6 @@
 package server.json
 
-import invoices.{Client, Invoice}
+import models.invoices.{Client, Invoice}
 import org.joda.money.{CurrencyUnit, Money}
 import org.joda.time.LocalDate
 import org.scalatest._
@@ -61,7 +61,7 @@ class InvoiceProtocolSpec extends FunSpec with Matchers with InvoiceProtocol {
             |}""".stripMargin.parseJson
 
         it("should parse the Invoice") {
-          val invoice = invoiceFormat.read(json)
+          val invoice = json.convertTo[Invoice]
 
           invoice should be (
             Invoice(
@@ -93,7 +93,7 @@ class InvoiceProtocolSpec extends FunSpec with Matchers with InvoiceProtocol {
 
         it ("should throw a DeserializationException") {
           assertThrows[DeserializationException] {
-            invoiceFormat.read(json)
+            json.convertTo[Invoice]
           }
         }
       }

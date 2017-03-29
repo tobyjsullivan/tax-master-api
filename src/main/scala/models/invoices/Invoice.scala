@@ -1,4 +1,4 @@
-package invoices
+package models.invoices
 
 import org.joda.money.Money
 import org.joda.time.LocalDate

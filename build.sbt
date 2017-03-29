@@ -1,6 +1,7 @@
 // Dependencies
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.1"
 val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.4.17"
+val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % "2.5.0-RC1"
 val akkaHttp = "com.typesafe.akka" %% "akka-http" % "10.0.5"
 val akkaHttpSprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.5"
 val jodaTime = "joda-time" % "joda-time" % "2.9.9"
@@ -18,6 +19,7 @@ lazy val root = (project in file(".")).
     libraryDependencies ++= Seq(
       scalaTest,
       akkaActor,
+      akkaTestkit,
       akkaHttp,
       akkaHttpSprayJson,
       jodaTime,

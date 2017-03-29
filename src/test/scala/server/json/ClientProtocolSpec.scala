@@ -1,6 +1,6 @@
 package server.json
 
-import invoices.Client
+import models.invoices.Client
 import org.scalatest._
 import spray.json._
 
@@ -28,7 +28,7 @@ class ClientProtocolSpec extends FunSpec with Matchers with ClientProtocol {
         val json = """{ "id": "2ea297fd-7812-4efd-80c2-e0af93fc2e8a", "name": "Umbrella Corp." }""".parseJson
 
         it("should unmarshall the correct Client") {
-          val client = clientFormat.read(json)
+          val client: Client = json.convertTo[Client]
 
           client.id should be ("2ea297fd-7812-4efd-80c2-e0af93fc2e8a")
           client.name should be ("Umbrella Corp.")
@@ -40,7 +40,7 @@ class ClientProtocolSpec extends FunSpec with Matchers with ClientProtocol {
 
         it("should throw a deserialization exception") {
           assertThrows[DeserializationException] {
-            clientFormat.read(json)
+            json.convertTo[Client]
           }
         }
       }

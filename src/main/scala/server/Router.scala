@@ -13,7 +13,7 @@ import scala.concurrent.{Await, Future}
   */
 object Router {
   def apply()(implicit system: ActorSystem): HttpRequest => HttpResponse = {
-    case r @ HttpRequest(GET, Uri.Path("/invoices"), _, _, _) =>
+    case r @ HttpRequest(GET, Uri.Path("/models/invoices"), _, _, _) =>
       implicit val timeout = Timeout( 30 seconds)
       implicit val ec = system.dispatcher
 

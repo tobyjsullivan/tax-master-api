@@ -14,7 +14,8 @@ object Service {
 
     println("Server running. Press ENTER to stop.")
     StdIn.readLine()
-
+    println("Shutting down...")
     scala.concurrent.Await.ready(serverHandle.stop(), 30 seconds)
+    println("Goodbye.")
   }
 }

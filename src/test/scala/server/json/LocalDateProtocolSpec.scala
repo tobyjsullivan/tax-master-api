@@ -24,7 +24,7 @@ class LocalDateProtocolSpec extends FunSpec with Matchers with LocalDateProtocol
         val js = "\"2017-02-22\"".parseJson
 
         it("should deserialize the correct local date") {
-          val date = LocalDateFormat.read(js)
+          val date = js.convertTo[LocalDate]
 
           date.getYear should be (2017)
           date.getMonthOfYear should be (FEBRUARY)
@@ -37,7 +37,7 @@ class LocalDateProtocolSpec extends FunSpec with Matchers with LocalDateProtocol
 
         it("should throw a DeserializationException") {
           assertThrows[DeserializationException] {
-            LocalDateFormat.read(js)
+            js.convertTo[LocalDate]
           }
         }
       }
