@@ -139,6 +139,24 @@ class InvoicesHandlerSpec extends TestKit(ActorSystem("TestSystem"))
           }
         }
       }
+
+      describe("when sent an OPTIONS request to /invoices") {
+        it ("should respond with appropriate CORS headers") {
+          val request = HttpRequest(
+            method = HttpMethods.OPTIONS,
+            uri = "/invoices"
+          )
+          handlerRef.tell(request, testActor)
+
+          val headers = expectMsgPF() {
+            case HttpResponse(_, headers, _, _) => headers
+          }
+
+          val corsHeader = headers.find(_.is("access-control-allow-origin")).get
+          corsHeader.name().toLowerCase should be ("access-control-allow-origin")
+          corsHeader.value() should be ("*")
+        }
+      }
     }
   }
 }

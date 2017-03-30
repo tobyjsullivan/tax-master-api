@@ -61,7 +61,10 @@ class InvoicesHandler(invoiceConnector: InvoiceConnector) extends Actor {
           entity = HttpEntity(ContentTypes.`application/json`, response)
         )
       }
+    case HttpRequest(OPTIONS, _, _, _, _) =>
+      val asker = sender()
 
+      asker ! HttpResponse(headers = List(corsHeader))
     case _ =>
       sender ! HttpResponse(status = StatusCodes.NotFound)
   }
