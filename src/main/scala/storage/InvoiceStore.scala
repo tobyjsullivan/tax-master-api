@@ -16,7 +16,7 @@ object InvoiceStore {
 class InvoiceStore(connector: InvoiceConnector) extends Actor {
   import InvoiceStore._
 
-  def receive = {
+  def receive: Receive = {
     case GetInvoices =>
       val invoices = connector.getAllInvoices()
       sender ! invoices
@@ -27,13 +27,15 @@ class InvoiceStore(connector: InvoiceConnector) extends Actor {
       // Generate an id for new clients
       val clientWithId = invoice.client.id match {
         case Some(id) => invoice.client
-        case None => invoice.client.copy(id = Some(UUID.randomUUID().toString))
+        case None => invoice.client.copy(id = Some(generateId))
       }
 
       // Generate an id for the invoice
-      val invoiceWithId = invoice.copy(id = Some(UUID.randomUUID().toString), client = clientWithId)
+      val invoiceWithId = invoice.copy(id = Some(generateId), client = clientWithId)
 
       connector.saveInvoice(invoiceWithId)
       sender ! InvoiceSaved(invoiceWithId)
   }
+
+  private def generateId: String = UUID.randomUUID().toString
 }

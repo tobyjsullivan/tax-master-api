@@ -1,6 +1,7 @@
 package handlers
 
 import akka.actor.{ActorSystem, Props}
+import akka.http.javadsl.model.headers.AccessControlAllowOrigin
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.Location
 import akka.stream.ActorMaterializer
@@ -79,9 +80,13 @@ class InvoicesHandlerSpec extends TestKit(ActorSystem("TestSystem"))
         it("should return a JSON list of invoices") {
           handlerRef.tell(HttpRequest(HttpMethods.GET, "/invoices"), testActor)
 
-          val entity = expectMsgPF() {
-            case HttpResponse(StatusCodes.OK, _, entity, _) => entity
+          val (headers, entity) = expectMsgPF() {
+            case HttpResponse(StatusCodes.OK, headers, entity, _) => (headers, entity)
           }
+
+          val corsHeader = headers.find(_.is("access-control-allow-origin")).get
+          corsHeader.name().toLowerCase should be ("access-control-allow-origin")
+          corsHeader.value() should be ("*")
 
           entity.getContentType() should be(ContentTypes.`application/json`)
 
@@ -125,8 +130,12 @@ class InvoicesHandlerSpec extends TestKit(ActorSystem("TestSystem"))
             }
 
             val locationHeader = headers.find(_.is("location")).get
-            locationHeader shouldBe a [Location]
-            locationHeader.asInstanceOf[Location].uri.path.toString() should startWith ("/invoices/")
+            locationHeader.name().toLowerCase should be ("location")
+            locationHeader.value() should startWith ("/invoices/")
+
+            val corsHeader = headers.find(_.is("access-control-allow-origin")).get
+            corsHeader.name().toLowerCase should be ("access-control-allow-origin")
+            corsHeader.value() should be ("*")
           }
         }
       }
