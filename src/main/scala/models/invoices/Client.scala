@@ -1,3 +1,3 @@
 package models.invoices
 
-case class Client(id: String, name: String)
+case class Client(id: Option[String], name: String)

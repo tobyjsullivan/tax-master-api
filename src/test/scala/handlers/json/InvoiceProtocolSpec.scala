@@ -11,9 +11,9 @@ class InvoiceProtocolSpec extends FunSpec with Matchers with InvoiceProtocol {
     describe(".write") {
       describe("with an Invoice") {
         val invoice = Invoice(
-          id = "182b2349-c69f-42b4-ae9d-1e54148e7df7",
+          id = Some("182b2349-c69f-42b4-ae9d-1e54148e7df7"),
           client = Client(
-            id = "5022e8fa-3268-405a-8180-93cbc3290e92",
+            id = Some("5022e8fa-3268-405a-8180-93cbc3290e92"),
             name = "Initech"
           ),
           issueDate = new LocalDate(2009, 8, 28),
@@ -65,9 +65,9 @@ class InvoiceProtocolSpec extends FunSpec with Matchers with InvoiceProtocol {
 
           invoice should be (
             Invoice(
-              id = "40a30c8f-a4b4-4546-90ef-6c083692149e",
+              id = Some("40a30c8f-a4b4-4546-90ef-6c083692149e"),
               client = Client(
-                id = "e76b982c-7224-4d3b-b52a-915ad811c544",
+                id = Some("e76b982c-7224-4d3b-b52a-915ad811c544"),
                 name = "Massive Dynamic"
               ),
               issueDate = new LocalDate(2014, 8, 19),

@@ -7,5 +7,5 @@ trait InvoiceConnector {
 
   def getInvoice(id: String): Option[Invoice]
 
-  def saveInvoice(invoice: String): Unit
+  def saveInvoice(invoice: Invoice): Unit
 }

@@ -9,10 +9,10 @@ class ClientProtocolSpec extends FunSpec with Matchers with ClientProtocol {
     describe(".write") {
       describe("with a complete Client") {
         val client = Client(
-          id = "e99b6f5e-a312-47a6-8a0c-4e5588458bec",
+          id = Some("e99b6f5e-a312-47a6-8a0c-4e5588458bec"),
           name = "Globex Corp."
         )
-        it("should serialize to handlers.json") {
+        it("should serialize to json") {
           val js = client.toJson
 
           js should be (JsObject(
@@ -30,7 +30,7 @@ class ClientProtocolSpec extends FunSpec with Matchers with ClientProtocol {
         it("should unmarshall the correct Client") {
           val client: Client = json.convertTo[Client]
 
-          client.id should be ("2ea297fd-7812-4efd-80c2-e0af93fc2e8a")
+          client.id should be (Some("2ea297fd-7812-4efd-80c2-e0af93fc2e8a"))
           client.name should be ("Umbrella Corp.")
         }
       }
@@ -38,7 +38,17 @@ class ClientProtocolSpec extends FunSpec with Matchers with ClientProtocol {
       describe("when id field is missing") {
         val json = """{ "name": "Globex" }""".parseJson
 
-        it("should throw a deserialization exception") {
+        it("should unmarshall a Client with no ID") {
+          val client: Client = json.convertTo[Client]
+
+          client should be (Client(id = None, name = "Globex"))
+        }
+      }
+
+      describe("when name field is missing") {
+        val json = """{ "id": "87c4dd6b-2ec6-4457-96ca-578791a994fb" }""".parseJson
+
+        it ("should throw a DeserializationException") {
           assertThrows[DeserializationException] {
             json.convertTo[Client]
           }

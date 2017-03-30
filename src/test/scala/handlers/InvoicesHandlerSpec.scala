@@ -2,6 +2,7 @@ package handlers
 
 import akka.actor.{ActorSystem, Props}
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers.Location
 import akka.stream.ActorMaterializer
 import akka.testkit.{ImplicitSender, TestKit}
 import models.invoices.{Client, Invoice, InvoiceCollection}
@@ -26,18 +27,18 @@ class InvoicesHandlerSpec extends TestKit(ActorSystem("TestSystem"))
   override def afterAll(): Unit = shutdown(system)
 
   private val testInvoice0 = Invoice(
-    "6929ac16-cf62-4ef0-a3bd-2e9a350df6fb",
+    Some("6929ac16-cf62-4ef0-a3bd-2e9a350df6fb"),
     Client(
-      "0514c037-4505-4e7d-9732-94515c938087",
+      Some("0514c037-4505-4e7d-9732-94515c938087"),
       "Globex"
     ),
     new LocalDate(2017, 3, 11),
     Money.of(USD, 1234.56)
   )
   private val testInvoice1 = Invoice(
-    "d124ced1-c4ac-4ccd-89df-ea57ccc52017",
+    Some("d124ced1-c4ac-4ccd-89df-ea57ccc52017"),
     Client(
-      "a96fe6d8-c2d0-4efd-8d65-4d34bf474635",
+      Some("a96fe6d8-c2d0-4efd-8d65-4d34bf474635"),
       "Umbrella Corp."
     ),
     new LocalDate(2017, 2, 25),
@@ -54,34 +55,80 @@ class InvoicesHandlerSpec extends TestKit(ActorSystem("TestSystem"))
       )
 
     override def getInvoice(id: String): Option[Invoice] = id match {
-      case testInvoice0.id => Some(testInvoice0)
-      case testInvoice1.id => Some(testInvoice1)
+      case "6929ac16-cf62-4ef0-a3bd-2e9a350df6fb" => Some(testInvoice0)
+      case "d124ced1-c4ac-4ccd-89df-ea57ccc52017" => Some(testInvoice1)
       case _ => None
     }
 
-    override def saveInvoice(invoice: String): Unit = ???
+    private var lastSavedInvoice: Option[Invoice] = None
+    override def saveInvoice(invoice: Invoice): Unit = {
+      lastSavedInvoice = Some(invoice)
+    }
+
+    def resetSavedInvoice(): Unit = {
+      lastSavedInvoice = None
+    }
+
+    def savedInvoice: Option[Invoice] = lastSavedInvoice
   }
 
   describe("InvoicesHandler") {
     val handlerRef = system.actorOf(Props(new InvoicesHandler(testConnector)))
+    describe(".tell") {
+      describe("when sent a GET request to /invoices") {
+        it("should return a JSON list of invoices") {
+          handlerRef.tell(HttpRequest(HttpMethods.GET, "/invoices"), testActor)
 
-    describe("when sent a GET request to /invoices") {
-      it("should return a JSON list of invoices") {
-        handlerRef ! HttpRequest(HttpMethods.GET, "/invoices")
+          val entity = expectMsgPF() {
+            case HttpResponse(StatusCodes.OK, _, entity, _) => entity
+          }
 
-        val entity = expectMsgPF() {
-          case HttpResponse(StatusCodes.OK, _, entity, _) => entity
+          entity.getContentType() should be(ContentTypes.`application/json`)
+
+          val json = Await.result(entity.toStrict(100 milliseconds).map(_.data.utf8String), 100 milliseconds).parseJson
+
+          json shouldBe a[JsObject]
+          val payload = json.asJsObject.getFields("payload").head
+
+          payload shouldBe a[JsArray]
+          payload.asInstanceOf[JsArray].elements.length should be(2)
         }
+      }
 
-        entity.getContentType() should be (ContentTypes.`application/json`)
+      describe("when sent a POST request to /invoices") {
+        describe("with valid JSON for a new invoice") {
+          val invoiceJson =
+            """
+              |{
+              |  "client": {
+              |    "name": "Umbrella Corp."
+              |  },
+              |  "issueDate": "2017-05-10",
+              |  "amount": {
+              |    "currency": "AUD",
+              |    "value": 947791
+              |  }
+              |}
+            """.stripMargin
 
-        val json = Await.result(entity.toStrict(100 milliseconds).map(_.data.utf8String), 100 milliseconds).parseJson
+          it("should save that invoice to the data store") {
+            val request = HttpRequest(
+              method = HttpMethods.POST,
+              uri = "/invoices",
+              entity = HttpEntity(ContentTypes.`application/json`, invoiceJson)
+            )
+            handlerRef.tell(request, testActor)
 
-        json shouldBe a [JsObject]
-        val payload = json.asJsObject.getFields("payload").head
 
-        payload shouldBe a [JsArray]
-        payload.asInstanceOf[JsArray].elements.length should be (2)
+            val headers = expectMsgPF() {
+              case HttpResponse(StatusCodes.Created, headers, _, _) => headers
+            }
+
+            val locationHeader = headers.find(_.is("location")).get
+            locationHeader shouldBe a [Location]
+            locationHeader.asInstanceOf[Location].uri.path.toString() should startWith ("/invoices/")
+          }
+        }
       }
     }
   }
