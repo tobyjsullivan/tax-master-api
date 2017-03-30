@@ -6,8 +6,8 @@ It provides a single access point for all client applications.
 ## Architecture
 
 The API is built in Scala. The HTTP server is powered by
-[Spray](http://spray.io/documentation/1.2.4/spray-can/http-server/)
-and Akka actor systems power all request handling under the hood.
+Akka Http and Akka actor systems power all request handling
+under the hood.
 
 ## Running
 
