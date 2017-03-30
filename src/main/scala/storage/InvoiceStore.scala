@@ -24,8 +24,11 @@ class InvoiceStore(connector: InvoiceConnector) extends Actor {
       val invoice = connector.getInvoice(id)
       sender ! invoice
     case SaveInvoice(invoice) =>
-      // Generate an id for the client
-      val clientWithId = invoice.client.copy(id = Some(UUID.randomUUID().toString))
+      // Generate an id for new clients
+      val clientWithId = invoice.client.id match {
+        case Some(id) => invoice.client
+        case None => invoice.client.copy(id = Some(UUID.randomUUID().toString))
+      }
 
       // Generate an id for the invoice
       val invoiceWithId = invoice.copy(id = Some(UUID.randomUUID().toString), client = clientWithId)
