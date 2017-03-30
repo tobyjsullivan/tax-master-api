@@ -10,15 +10,16 @@ object Service {
   import scala.concurrent.ExecutionContext.Implicits.global
 
   def main(args: Array[String]): Unit = {
-    val serverHandle = Server.start()
+    val startup = Server.start()
 
-    println("Server running. Press ENTER to stop.")
-    StdIn.readLine()
-    println("Shutting down...")
-    val fDone = serverHandle.stop()
-    fDone.foreach { _ =>
+    startup.map { _ =>
+      println("Server running. Press ENTER to stop.")
+      StdIn.readLine()
+    }.flatMap { _ =>
+      println("Shutting down...")
+      Server.stop()
+    }.onComplete { _ =>
       println("Goodbye.")
     }
-    scala.concurrent.Await.ready(fDone, 30 seconds)
   }
 }

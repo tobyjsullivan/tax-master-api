@@ -1,6 +1,6 @@
 package server
 
-import akka.actor.ActorSystem
+import akka.actor.{Actor, ActorSystem}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.Http.ServerBinding
 import akka.stream.ActorMaterializer
@@ -10,12 +10,15 @@ import scala.concurrent.{ExecutionContext, Future}
 /** Server is the main HTTP server logic for the service.
   */
 object Server {
+  var actorSystem: Option[ActorSystem] = None
+  var bindingFuture: Option[Future[ServerBinding]] = None
+
   /** Starts the server
     *
     * @return A handle to the server instance to be used for shutdown.
     */
-  def start(): ServerHandle = {
-    implicit val system = ActorSystem()
+  def start(): Future[Unit] = {
+    implicit val system = actorSystem.getOrElse(ActorSystem())
     implicit val materializer = ActorMaterializer()
     implicit val executionContext = system.dispatcher
 
@@ -23,27 +26,30 @@ object Server {
     val router = new Router(system)
 
     // Bind and listen on the configured port
-    val bindingFuture = Http().bindAndHandleAsync(router.apply, "localhost", 8080)
+    val fBinding = Http().bindAndHandleAsync(router.apply, "localhost", 8080)
 
-    ServerHandleImpl(bindingFuture, system)
+    bindingFuture = Some(fBinding)
+    actorSystem = Some(system)
+
+    // Return Unit to avoid leaking any internal state
+    fBinding.map(_ => Unit)
   }
-}
 
-private case class ServerHandleImpl(private val bindingFuture: Future[ServerBinding], private val system: ActorSystem) extends ServerHandle {
   def stop()(implicit executionContext: ExecutionContext): Future[Unit] = {
-    bindingFuture.flatMap(_.unbind()).andThen{
-      case _ =>system.terminate()
-    }
+    unbind().flatMap(_ => shutdown())
   }
-}
 
-/** ServerHandle represents an active server instance.
-  */
-trait ServerHandle {
-  /** stop causes the server instance to shut down safely.
-    *
-    * @param executionContext The execution context to use
-    * @return A future which completes when shutdown is finished
-    */
-  def stop()(implicit executionContext: ExecutionContext): Future[Unit]
+  private def unbind()(implicit executionContext: ExecutionContext): Future[Unit] = bindingFuture match {
+    case Some(fBinding) =>
+      bindingFuture = None
+      fBinding.flatMap(_.unbind())
+    case None => Future.successful()
+  }
+
+  private def shutdown()(implicit executionContext: ExecutionContext): Future[Unit] = actorSystem match {
+    case Some(system) =>
+      actorSystem = None
+      system.terminate().map(_ => ())
+    case None => Future.successful()
+  }
 }
