@@ -1,4 +1,4 @@
-package server.json
+package handlers.json
 
 import models.invoices.{Client, Invoice}
 import org.joda.money.{CurrencyUnit, Money}

@@ -1,6 +1,6 @@
-package server.json
+package handlers.json
 
-import server.handlers.JsonResponse
+import handlers.JsonResponse
 import spray.json._
 
 private[json] trait JsonResponseProtocol extends DefaultJsonProtocol {

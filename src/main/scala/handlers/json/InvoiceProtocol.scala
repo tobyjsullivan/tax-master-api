@@ -1,4 +1,4 @@
-package server.json
+package handlers.json
 
 import models.invoices.Invoice
 import spray.json._

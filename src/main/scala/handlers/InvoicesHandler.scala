@@ -1,4 +1,4 @@
-package server.handlers
+package handlers
 
 import akka.actor.{Actor, Props}
 import akka.http.scaladsl.model._
@@ -7,14 +7,13 @@ import akka.pattern.ask
 import akka.util.Timeout
 import models.invoices.{Invoice, InvoiceCollection}
 import spray.json._
-import server.json.Protocol._
+import json.Protocol._
 import storage.InvoiceStore
 import storage.connectors.{DynamoDBConnector, InvoiceConnector}
 
 import scala.concurrent.duration._
 
-class InvoicesHandler extends Actor {
-  private val invoiceConnector: InvoiceConnector = DynamoDBConnector
+class InvoicesHandler(invoiceConnector: InvoiceConnector) extends Actor {
   private val invoiceStorage = context.actorOf(Props(new InvoiceStore(invoiceConnector)))
   private implicit val executionContext = context.dispatcher
   private implicit val askTimeout = Timeout(30 seconds)

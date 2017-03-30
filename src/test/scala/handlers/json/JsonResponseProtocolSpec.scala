@@ -1,7 +1,7 @@
-package server.json
+package handlers.json
 
 import org.scalatest._
-import server.handlers.JsonResponse
+import handlers.JsonResponse
 import spray.json._
 
 class JsonResponseProtocolSpec extends FunSpec with Matchers with JsonResponseProtocol {

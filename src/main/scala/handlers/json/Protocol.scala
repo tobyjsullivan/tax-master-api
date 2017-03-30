@@ -1,4 +1,4 @@
-package server.json
+package handlers.json
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import spray.json._

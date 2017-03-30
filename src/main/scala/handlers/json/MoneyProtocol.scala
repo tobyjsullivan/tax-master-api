@@ -1,4 +1,4 @@
-package server.json
+package handlers.json
 
 import org.joda.money.{CurrencyUnit, Money}
 import spray.json._

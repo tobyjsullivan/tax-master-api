@@ -1,4 +1,4 @@
-package server.json
+package handlers.json
 
 import models.invoices.{Invoice, InvoiceCollection}
 import org.scalatest._

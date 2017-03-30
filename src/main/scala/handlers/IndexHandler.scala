@@ -1,4 +1,4 @@
-package server.handlers
+package handlers
 
 import akka.actor.Actor
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpRequest, HttpResponse}

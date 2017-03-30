@@ -11,12 +11,13 @@ import org.joda.money.{CurrencyUnit, Money}
 import org.joda.time.LocalDate
 import storage.connectors.InvoiceConnector
 
+import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
 class InvoiceStoreSpec extends TestKit(ActorSystem("TestSystem"))
   with ImplicitSender
-  with AsyncFunSpecLike
+  with FunSpecLike
   with Matchers
   with BeforeAndAfterAll {
   private val testInvoice0 = Invoice(
@@ -65,18 +66,11 @@ class InvoiceStoreSpec extends TestKit(ActorSystem("TestSystem"))
     describe(".receive") {
       describe("when sent a GetInvoices request") {
         it("should respond with list of models.invoices") {
-          val fInvoices = (storeRef ? InvoiceStore.GetInvoices).mapTo[InvoiceCollection]
+          storeRef ! InvoiceStore.GetInvoices
 
-          fInvoices.map { invoices =>
-            invoices should be (
-              InvoiceCollection(
-                Seq(
-                  testInvoice0,
-                  testInvoice1
-                )
-              )
-            )
-          }
+          expectMsg[InvoiceCollection](
+            InvoiceCollection(Seq(testInvoice0, testInvoice1))
+          )
         }
       }
 
@@ -84,11 +78,9 @@ class InvoiceStoreSpec extends TestKit(ActorSystem("TestSystem"))
         describe("with a valid invoice ID") {
           val invoiceId = testInvoice1.id
           it("should return the invoice") {
-            val fInvoice = (storeRef ? InvoiceStore.GetInvoice(invoiceId)).mapTo[Option[Invoice]]
+            storeRef ! InvoiceStore.GetInvoice(invoiceId)
 
-            fInvoice.map { oInvoice =>
-              oInvoice should be (Some(testInvoice1))
-            }
+            expectMsg(Some(testInvoice1))
           }
         }
 
@@ -96,11 +88,9 @@ class InvoiceStoreSpec extends TestKit(ActorSystem("TestSystem"))
           val invoiceId = "6ee432d6-2ee6-4ea0-b85d-d4a52fcf9de3"
 
           it("should return None") {
-            val fInvoice = (storeRef ? InvoiceStore.GetInvoice(invoiceId)).mapTo[Option[Invoice]]
+            storeRef ! InvoiceStore.GetInvoice(invoiceId)
 
-            fInvoice.map { oInvoice =>
-              oInvoice should be (None)
-            }
+            expectMsg(None)
           }
         }
 

@@ -1,4 +1,4 @@
-package server.json
+package handlers.json
 
 import org.joda.time.DateTimeConstants._
 import org.joda.time.LocalDate

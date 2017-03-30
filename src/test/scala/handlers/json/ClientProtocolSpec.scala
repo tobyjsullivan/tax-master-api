@@ -1,4 +1,4 @@
-package server.json
+package handlers.json
 
 import models.invoices.Client
 import org.scalatest._
@@ -12,7 +12,7 @@ class ClientProtocolSpec extends FunSpec with Matchers with ClientProtocol {
           id = "e99b6f5e-a312-47a6-8a0c-4e5588458bec",
           name = "Globex Corp."
         )
-        it("should serialize to json") {
+        it("should serialize to handlers.json") {
           val js = client.toJson
 
           js should be (JsObject(

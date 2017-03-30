@@ -2,7 +2,7 @@
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.1"
 val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.4.17"
 val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % "2.4.17"
-val akkaHttp = "com.typesafe.akka" %% "akka-http" % "10.0.5"
+val akkaHttpCore = "com.typesafe.akka" %% "akka-http-core" % "10.0.5"
 val akkaHttpSprayJson = "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.5"
 val jodaTime = "joda-time" % "joda-time" % "2.9.9"
 val jodaMoney = "org.joda" % "joda-money" % "0.12"
@@ -21,7 +21,7 @@ lazy val root = (project in file(".")).
       scalaTest,
       akkaActor,
       akkaTestkit,
-      akkaHttp,
+      akkaHttpCore,
       akkaHttpSprayJson,
       jodaTime,
       jodaMoney,
