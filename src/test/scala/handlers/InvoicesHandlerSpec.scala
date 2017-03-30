@@ -152,9 +152,19 @@ class InvoicesHandlerSpec extends TestKit(ActorSystem("TestSystem"))
             case HttpResponse(_, headers, _, _) => headers
           }
 
-          val corsHeader = headers.find(_.is("access-control-allow-origin")).get
-          corsHeader.name().toLowerCase should be ("access-control-allow-origin")
-          corsHeader.value() should be ("*")
+          val corsOriginHeader = headers.find(_.is("access-control-allow-origin")).get
+          corsOriginHeader.name().toLowerCase should be ("access-control-allow-origin")
+          corsOriginHeader.value() should be ("*")
+
+          val corsMethodsHeader = headers.find(_.is("access-control-allow-methods")).get
+          corsMethodsHeader.name().toLowerCase should be ("access-control-allow-methods")
+          corsMethodsHeader.value().toUpperCase() should include ("GET")
+          corsMethodsHeader.value().toUpperCase() should include ("POST")
+
+          val corsHeadersHeader = headers.find(_.is("access-control-allow-headers")).get
+          corsHeadersHeader.name().toLowerCase should be ("access-control-allow-headers")
+          corsHeadersHeader.value().toLowerCase should include ("content-type")
+
         }
       }
     }

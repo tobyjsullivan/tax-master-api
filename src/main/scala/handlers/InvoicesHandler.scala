@@ -23,7 +23,11 @@ class InvoicesHandler(invoiceConnector: InvoiceConnector) extends Actor {
   private implicit val materializer = ActorMaterializer()
   private implicit val timeout = Timeout(30 seconds)
 
-  private val corsHeader = headers.`Access-Control-Allow-Origin`.*
+  private val corsHeaders = List(
+    headers.`Access-Control-Allow-Origin`.*,
+    headers.`Access-Control-Allow-Methods`.apply(GET, POST),
+    headers.`Access-Control-Allow-Headers`.apply("Content-Type")
+  )
 
   def receive: Receive = {
     case HttpRequest(GET, Uri.Path("/invoices"), _, _, _) =>
@@ -33,7 +37,7 @@ class InvoicesHandler(invoiceConnector: InvoiceConnector) extends Actor {
       fInvoices.map { invoices =>
         val response = JsonResponse(invoices).toJson.prettyPrint
         asker ! HttpResponse(
-          headers = List(corsHeader),
+          headers = List(corsHeaders: _*),
           entity = HttpEntity(ContentTypes.`application/json`, response)
         )
       }
@@ -55,16 +59,15 @@ class InvoicesHandler(invoiceConnector: InvoiceConnector) extends Actor {
         asker ! HttpResponse(
           status = StatusCodes.Created,
           headers = List(
-            corsHeader,
-            locationHeader
-          ),
+            corsHeaders: _*
+          ) :+ locationHeader,
           entity = HttpEntity(ContentTypes.`application/json`, response)
         )
       }
     case HttpRequest(OPTIONS, _, _, _, _) =>
       val asker = sender()
 
-      asker ! HttpResponse(headers = List(corsHeader))
+      asker ! HttpResponse(headers = List(corsHeaders: _*))
     case _ =>
       sender ! HttpResponse(status = StatusCodes.NotFound)
   }
