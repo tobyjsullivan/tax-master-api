@@ -1,7 +1,7 @@
 package storage
 
 import akka.actor.Actor
-import models.invoices.{Client, Invoice, InvoiceCollection}
+import models.invoices.{Invoice}
 import storage.connectors.InvoiceConnector
 
 object InvoiceStore {

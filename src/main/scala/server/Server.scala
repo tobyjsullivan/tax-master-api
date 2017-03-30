@@ -20,10 +20,10 @@ object Server {
     implicit val executionContext = system.dispatcher
 
     // Load up the routes
-    val router = Router()
+    val router = new Router(system)
 
     // Bind and listen on the configured port
-    val bindingFuture = Http().bindAndHandleSync(router, "localhost", 8080)
+    val bindingFuture = Http().bindAndHandleAsync(router.apply, "localhost", 8080)
 
     ServerHandleImpl(bindingFuture, system)
   }

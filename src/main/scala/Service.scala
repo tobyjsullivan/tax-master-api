@@ -15,7 +15,10 @@ object Service {
     println("Server running. Press ENTER to stop.")
     StdIn.readLine()
     println("Shutting down...")
-    scala.concurrent.Await.ready(serverHandle.stop(), 30 seconds)
-    println("Goodbye.")
+    val fDone = serverHandle.stop()
+    fDone.foreach { _ =>
+      println("Goodbye.")
+    }
+    scala.concurrent.Await.ready(fDone, 30 seconds)
   }
 }

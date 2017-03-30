@@ -9,6 +9,7 @@ object Protocol extends SprayJsonSupport
   with LocalDateProtocol
   with MoneyProtocol
   with InvoiceProtocol
+  with InvoiceCollectionProtocol
   with JsonResponseProtocol {
 
 }
